@@ -7317,7 +7317,7 @@ void MainWindow::on_pbTimeLapse_clicked()
 QString MainWindow::genRemoteVideoCommand(QString remoteVideo,bool ROI)
 {
     QString tmpCommand;
-    tmpCommand.append("libcamera-vid -n -t ");
+    tmpCommand.append("rpicam-vid -n -t ");
     tmpCommand.append( QString::number( ui->spinBoxVideoDuration->value() * 1000 ) );
     //tmpCommand.append( " -vf -b 50000000 -fps " );
     tmpCommand.append( " -b 50000000 -fps " );
@@ -7436,7 +7436,7 @@ QString MainWindow::genTimelapseCommand(QString folder,bool setROI)
 {
     QString tmpCommand;
     tmpCommand.clear();
-    tmpCommand.append("libcamera-still -t");
+    tmpCommand.append("rpicam-still -t");
     tmpCommand.append(" " + QString::number(ui->spinBoxTimelapseDuration->value()*1000));
     tmpCommand.append(" -tl ");
     tmpCommand.append(QString::number( ui->spinBoxTimelapse->value() ));
@@ -7572,7 +7572,7 @@ QString MainWindow::genSubareaRaspistillCommand( QString remoteFilename, QString
     //.................................
     QString tmpCommand;
     tmpCommand.clear();
-    tmpCommand.append("libcamera-still -o ");
+    tmpCommand.append("rpicam-still -o ");
     tmpCommand.append(remoteFilename);
     tmpCommand.append(" -t " + QString::number(ui->slideTriggerTime->value()*1000));
     tmpCommand.append(" -n -q 100");  // Removed -gc (not supported in libcamera)

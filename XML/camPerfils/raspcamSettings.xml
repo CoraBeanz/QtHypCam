@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings>
+    <AWB>auto</AWB>
+    <Exposure>auto</Exposure>
+    <Brightness>50</Brightness>
+    <Sharpness>0</Sharpness>
+    <Contrast>0</Contrast>
+    <Saturation>0</Saturation>
+    <ShutterSpeedMs>0</ShutterSpeedMs>
+    <SquareShutterSpeedMs>0</SquareShutterSpeedMs>
+    <ISO>100</ISO>
+    <ExposureCompensation>0</ExposureCompensation>
+    <TimelapseInterval_ms>1000</TimelapseInterval_ms>
+    <TimelapseDurationSecs>10</TimelapseDurationSecs>
+    <VideoDurationSecs>5</VideoDurationSecs>
+    <Format>1</Format>
+    <Red>0</Red>
+    <Green>0</Green>
+    <Preview>0</Preview>
+    <OneShot>1</OneShot>
+    <TriggeringTimeSecs>0</TriggeringTimeSecs>
+    <Denoise>0</Denoise>
+    <FullPhoto>1</FullPhoto>
+    <ColorBalance>0</ColorBalance>
+    <CameraMp>8</CameraMp>
+    <Flipped>0</Flipped>
+</Settings>

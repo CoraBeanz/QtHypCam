@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Settings>
+    <Version>1.0</Version>
+    <InputPort>8080</InputPort>
+    <OutputPort>8081</OutputPort>
+    <TcpPort>8888</TcpPort>
+</Settings>

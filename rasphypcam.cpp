@@ -305,7 +305,7 @@ std::string *genCommand(strReqImg *reqImg, const std::string& fileName)
 
     //Initialize command
     //..
-    std::string *tmpCommand = new std::string("libcamera-still -o ");
+    std::string *tmpCommand = new std::string("rpicam-still -o ");
     std::ostringstream ss;
     tmpCommand->append(fileName);
     tmpCommand->append(" -n -q 100");  // Removed -gc (not supported in libcamera)
