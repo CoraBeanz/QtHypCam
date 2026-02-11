@@ -1396,7 +1396,7 @@ int fileExists( QString fileName )
 
 int funcExecuteCommand( QString command )
 {
-    //Execute raspistill
+    //Execute camera command (libcamera-still, libcamera-vid, or legacy raspistill/raspivid)
     FILE* pipe;
     pipe = popen(command.toStdString().c_str(), "r");
     pclose(pipe);

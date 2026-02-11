@@ -7317,7 +7317,7 @@ void MainWindow::on_pbTimeLapse_clicked()
 QString MainWindow::genRemoteVideoCommand(QString remoteVideo,bool ROI)
 {
     QString tmpCommand;
-    tmpCommand.append("raspivid -n -t ");
+    tmpCommand.append("libcamera-vid -n -t ");
     tmpCommand.append( QString::number( ui->spinBoxVideoDuration->value() * 1000 ) );
     //tmpCommand.append( " -vf -b 50000000 -fps " );
     tmpCommand.append( " -b 50000000 -fps " );
@@ -7378,17 +7378,15 @@ QString MainWindow::genRemoteVideoCommand(QString remoteVideo,bool ROI)
 
 
     //.................................
-    //Colour balance?
+    //Colour balance? (Note: handled by AWB in libcamera)
     //.................................
-    if(ui->cbColorBalance->isChecked() ){
-        tmpCommand.append(" -ifx colourbalance");
-    }
+    // ColorBalance is now handled by AWB settings
 
     //.................................
     //Denoise?
     //.................................
     if( ui->cbDenoise->isChecked() ){
-        tmpCommand.append(" -ifx denoise");
+        tmpCommand.append(" --denoise cdn_off");
     }
 
     //.................................
@@ -7403,28 +7401,29 @@ QString MainWindow::genRemoteVideoCommand(QString remoteVideo,bool ROI)
     //AWB
     //.................................
     if( ui->cbAWB->currentText() != "none" ){
-        tmpCommand.append(" -awb " + ui->cbAWB->currentText());
+        tmpCommand.append(" --awb " + ui->cbAWB->currentText());
     }
 
     //.................................
     //Exposure
     //.................................
     if( ui->cbExposure->currentText() != "none" ){
-        tmpCommand.append(" -ex " + ui->cbExposure->currentText());
+        tmpCommand.append(" --metering " + ui->cbExposure->currentText());
     }
 
     //.................................
-    //ISO
+    //ISO -> Gain
     //.................................
     if( ui->slideISO->value() > 0 ){
-        tmpCommand.append(" -ISO " + QString::number(ui->slideISO->value()) );
+        float gain = (float)ui->slideISO->value() / 100.0f;
+        tmpCommand.append(" --gain " + QString::number(gain) );
     }
 
     //.................................
     //Flipped
     //.................................
     if( ui->cbFlipped->isChecked() ){
-        tmpCommand.append(" -vf " );
+        tmpCommand.append(" --vflip " );
     }
 
 
@@ -7437,12 +7436,12 @@ QString MainWindow::genTimelapseCommand(QString folder,bool setROI)
 {
     QString tmpCommand;
     tmpCommand.clear();
-    tmpCommand.append("raspistill -t");
+    tmpCommand.append("libcamera-still -t");
     tmpCommand.append(" " + QString::number(ui->spinBoxTimelapseDuration->value()*1000));
     tmpCommand.append(" -tl ");
     tmpCommand.append(QString::number( ui->spinBoxTimelapse->value() ));
     tmpCommand.append(" -o "+ folder +"%d.RGB888");
-    tmpCommand.append(" -n -q 100 -gc");
+    tmpCommand.append(" -n -q 100");  // Removed -gc (not supported in libcamera)
 
     //tmpCommand.append(" -tl 1000 -n -roi 0.221649485,0.313559322,0.416237113,0.372881356 -o ./tmpSnapVideos/%d.RGB888");
     //tmpCommand.append(" -tl 1000 -n -roi 0.2200,0.3136,0.4162,0.3729 -o ./tmpSnapVideos/%d.RGB888");
@@ -7500,17 +7499,15 @@ QString MainWindow::genTimelapseCommand(QString folder,bool setROI)
     }
 
     //.................................
-    //Colour balance?
+    //Colour balance? (Note: handled by AWB in libcamera)
     //.................................
-    if(ui->cbColorBalance->isChecked() ){
-        tmpCommand.append(" -ifx colourbalance");
-    }
+    // ColorBalance is now handled by AWB settings
 
     //.................................
     //Denoise?
     //.................................
     if( ui->cbDenoise->isChecked() ){
-        tmpCommand.append(" -ifx denoise");
+        tmpCommand.append(" --denoise cdn_off");
     }
 
     //.................................
@@ -7538,28 +7535,29 @@ QString MainWindow::genTimelapseCommand(QString folder,bool setROI)
     //AWB
     //.................................
     if( ui->cbAWB->currentText() != "none" ){
-        tmpCommand.append(" -awb " + ui->cbAWB->currentText());
+        tmpCommand.append(" --awb " + ui->cbAWB->currentText());
     }
 
     //.................................
     //Exposure
     //.................................
     if( ui->cbExposure->currentText() != "none" ){
-        tmpCommand.append(" -ex " + ui->cbExposure->currentText());
+        tmpCommand.append(" --metering " + ui->cbExposure->currentText());
     }
 
     //.................................
-    //ISO
+    //ISO -> Gain
     //.................................
     if( ui->slideISO->value() > 0 ){
-        tmpCommand.append(" -ISO " + QString::number(ui->slideISO->value()) );
+        float gain = (float)ui->slideISO->value() / 100.0f;
+        tmpCommand.append(" --gain " + QString::number(gain) );
     }
 
     //.................................
     //Flipped
     //.................................
     if( ui->cbFlipped->isChecked() ){
-        tmpCommand.append(" -vf " );
+        tmpCommand.append(" --vflip " );
     }
 
 
@@ -7574,10 +7572,10 @@ QString MainWindow::genSubareaRaspistillCommand( QString remoteFilename, QString
     //.................................
     QString tmpCommand;
     tmpCommand.clear();
-    tmpCommand.append("raspistill -o ");
+    tmpCommand.append("libcamera-still -o ");
     tmpCommand.append(remoteFilename);
     tmpCommand.append(" -t " + QString::number(ui->slideTriggerTime->value()*1000));
-    tmpCommand.append(" -n -q 100 -gc");
+    tmpCommand.append(" -n -q 100");  // Removed -gc (not supported in libcamera)
 
     //.................................
     //Diffraction Area ROI
@@ -7613,17 +7611,15 @@ QString MainWindow::genSubareaRaspistillCommand( QString remoteFilename, QString
     tmpCommand.append(QString::number( round( H * (double)camRes->height ) ));
 
     //.................................
-    //Colour balance?
+    //Colour balance? (Note: handled by AWB in libcamera)
     //.................................
-    if(ui->cbColorBalance->isChecked() ){
-        tmpCommand.append(" -ifx colourbalance");
-    }
+    // ColorBalance is now handled by AWB settings
 
     //.................................
     //Denoise?
     //.................................
     if( ui->cbDenoise->isChecked() ){
-        tmpCommand.append(" -ifx denoise");
+        tmpCommand.append(" --denoise cdn_off");
     }
 
     //.................................
@@ -7651,28 +7647,29 @@ QString MainWindow::genSubareaRaspistillCommand( QString remoteFilename, QString
     //AWB
     //.................................
     if( ui->cbAWB->currentText() != "none" ){
-        tmpCommand.append(" -awb " + ui->cbAWB->currentText());
+        tmpCommand.append(" --awb " + ui->cbAWB->currentText());
     }
 
     //.................................
     //Exposure
     //.................................
     if( ui->cbExposure->currentText() != "none" ){
-        tmpCommand.append(" -ex " + ui->cbExposure->currentText());
+        tmpCommand.append(" --metering " + ui->cbExposure->currentText());
     }
 
     //.................................
-    //ISO
+    //ISO -> Gain
     //.................................
     if( ui->slideISO->value() > 0 ){
-        tmpCommand.append(" -ISO " + QString::number(ui->slideISO->value()) );
+        float gain = (float)ui->slideISO->value() / 100.0f;
+        tmpCommand.append(" --gain " + QString::number(gain) );
     }
 
     //.................................
     //Flipped
     //.................................
     if( ui->cbFlipped->isChecked() ){
-        tmpCommand.append(" -vf " );
+        tmpCommand.append(" --vflip " );
     }
 
 

@@ -305,19 +305,17 @@ std::string *genCommand(strReqImg *reqImg, const std::string& fileName)
 
     //Initialize command
     //..
-    std::string *tmpCommand = new std::string("raspistill -o ");
+    std::string *tmpCommand = new std::string("libcamera-still -o ");
     std::ostringstream ss;
     tmpCommand->append(fileName);
-    tmpCommand->append(" -n -q 100 -gc");
+    tmpCommand->append(" -n -q 100");  // Removed -gc (not supported in libcamera)
 
-    //Colour balance?
-    if(reqImg->raspSett.ColorBalance){
-        tmpCommand->append(" -ifx colourbalance");
-    }
+    //Colour balance? (Note: -ifx effects are deprecated in libcamera, AWB handles this)
+    // ColorBalance is now handled by AWB settings below
 
-    //Denoise?
+    //Denoise? (Note: libcamera has built-in denoising, -ifx denoise not supported)
     if(reqImg->raspSett.Denoise){
-        tmpCommand->append(" -ifx denoise");
+        tmpCommand->append(" --denoise cdn_off");  // libcamera denoise modes: off, cdn_off, cdn_fast, cdn_hq
     }
 
     //Square Shuter speed
@@ -369,29 +367,32 @@ std::string *genCommand(strReqImg *reqImg, const std::string& fileName)
     //AWB
     if(strcmp((char*)reqImg->raspSett.AWB, "none")!=0){
         std::string sAWB((char*)reqImg->raspSett.AWB, sizeof(reqImg->raspSett.AWB));
-        tmpCommand->append(" -awb ");
+        tmpCommand->append(" --awb ");
         tmpCommand->append(sAWB.c_str());
         //printf("Entro a AWB: %s\n",sAWB.c_str());
     }
 
-    //Exposure
+    //Exposure (Note: libcamera uses different exposure modes)
     if(strcmp((char*)reqImg->raspSett.Exposure, "none")!=0){
         std::string sExposure((char*)reqImg->raspSett.Exposure, sizeof(reqImg->raspSett.Exposure));
-        tmpCommand->append(" -ex ");
+        // Map legacy exposure modes to libcamera metering modes where possible
+        tmpCommand->append(" --metering ");
         tmpCommand->append(sExposure.c_str());
         //printf("Entro a Exp: %s\n",sExposure.c_str());
     }
 
-    //ISO
+    //ISO -> Gain (libcamera uses analog gain instead of ISO)
     if( reqImg->raspSett.ISO > 0 ){
         ss.str("");
-        ss<<reqImg->raspSett.ISO;
-        tmpCommand->append(" -ISO " + ss.str());
+        // Convert ISO to gain (approximate): gain = ISO / 100
+        float gain = (float)reqImg->raspSett.ISO / 100.0f;
+        ss<<gain;
+        tmpCommand->append(" --gain " + ss.str());
     }
 
     //FLIPPED
     if( reqImg->raspSett.Flipped ){
-        tmpCommand->append(" -vf ");
+        tmpCommand->append(" --vflip ");
     }
 
     printf("tmpCommand: %s\n",tmpCommand->c_str());
